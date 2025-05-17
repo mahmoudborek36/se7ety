@@ -18,9 +18,9 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-  // AppLocalStorage.removeDta(key: AppLocalStorage.isPatients);
-  //     AppLocalStorage.removeDta(key: AppLocalStorage.isDoctor);
-  //     AppLocalStorage.removeDta(key: AppLocalStorage.isOnboardingShown);
+  AppLocalStorage.removeDta(key: AppLocalStorage.isPatients);
+      AppLocalStorage.removeDta(key: AppLocalStorage.isDoctor);
+    //  AppLocalStorage.removeDta(key: AppLocalStorage.isOnboardingShown);
     Future.delayed(const Duration(seconds: 3), () {
       String? isdoc =
           AppLocalStorage.getData(key: AppLocalStorage.isDoctor) ;

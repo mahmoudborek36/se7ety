@@ -13,26 +13,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UpdateDoctorRegistrationEvent>(updateDoctorRegistration);
   }
 
-  login(LoginEvent event, Emitter<AuthState> emit) async {
-    emit(LoginLoadingState());
-    try {
-      var userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: event.email, password: event.password);
-      User user = userCredential.user!;
-      AppLocalStorage.cacheData(
-          key: AppLocalStorage.userToken, value: user.uid);
-      emit(LoginSuccessState());
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        emit(AuthErrorState("الحساب غير موجود"));
-      } else if (e.code == 'wrong-password') {
-        emit(AuthErrorState("كلمة المرور غير صحيحة"));
-      }
-    } catch (e) {
-      emit(AuthErrorState('حدث خطأ ما.'));
+ void login(LoginEvent event, Emitter<AuthState> emit) async {
+  emit(LoginLoadingState());
+  try {
+    var userCredential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+            email: event.email, password: event.password);
+    User user = userCredential.user!;
+    
+    await AppLocalStorage.cacheData(
+        key: AppLocalStorage.userToken, value: user.uid);
+
+    emit(LoginSuccessState());
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found') {
+      emit(AuthErrorState("الحساب غير موجود"));
+    } else if (e.code == 'wrong-password') {
+      emit(AuthErrorState("كلمة المرور غير صحيحة"));
+    } else {
+      emit(AuthErrorState("حدث خطأ: ${e.message}"));
     }
+  } catch (e) {
+    emit(AuthErrorState("حدث خطأ غير متوقع: ${e.toString()}"));
   }
+}
 
   register(RegisterEvent event, Emitter<AuthState> emit) async {
     emit(RegisterLoadingState());
